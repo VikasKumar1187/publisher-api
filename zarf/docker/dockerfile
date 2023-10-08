@@ -1,0 +1,32 @@
+# choose golang image and give it a name so that it can be referenced later 
+FROM golang:1.21.1 as build_publisher-api
+
+ENV CGO_ENABLED 0
+ARG BUILD_REF
+
+# create s dir in docker container file system
+RUN mkdir -p /service
+# copy everything ( except items mentioned in .dockerignore file) from local context( physical machine) into container dir /service
+COPY . /service
+
+# set my working dir as /service in docker conatiner system
+WORKDIR /service
+# lets build our go binary from source code in dcoker container
+RUN go build -ldflags "-X main.build=${BUILD_REF}"
+
+# To create final image, we need base image, alpine:3.18.4 is our base image 
+# Run the Go Binary in Alpine.
+FROM alpine:3.18.4
+ARG BUILD_REF
+
+COPY --from=build_publisher-api /service /service
+#COPY --from=build_publisher-api /service /service
+WORKDIR /service
+CMD ["./publisher-api"]
+
+LABEL org.opencontainers.image.created="05102023_1300" \
+    org.opencontainers.image.title="Publisher-api" \
+    org.opencontainers.image.authors="Vikas Kumar" \
+    org.opencontainers.image.source="https://github.com/vikaskumar1187/serviceV3" \
+    org.opencontainers.image.revision="${BUILD_REF}" \
+    org.opencontainers.image.vendor="Self"
