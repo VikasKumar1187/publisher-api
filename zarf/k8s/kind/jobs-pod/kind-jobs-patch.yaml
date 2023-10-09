@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: publisher-api-service-pod
-  namespace: publisher-api-service-system
+  name: jobs-pod
+  namespace: jobs-system
 spec:
   replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: api
+      app: jobs
   template:
     metadata:
       labels:
-        app: api
+        app: jobs
     spec:
       containers:
-        # sales-api container configuration
-        - name: publisher-api-service
+        # jobs-api container configuration
+        - name: jobs-api
           resources:
             limits:
               cpu: "2000m" # Up to 2 full cores

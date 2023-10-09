@@ -1,25 +1,25 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: publisher-api-service-system
+  name: jobs-system
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: publisher-api-service-pod # Base POD name
-  namespace: publisher-api-service-system
+  name: jobs-pod # Base POD name
+  namespace: jobs-system
 spec:
   selector:
     matchLabels:
-      app: api # Selector for POD name search
+      app: jobs # Selector for POD name search
   template:
     metadata:
       labels:
-        app: api
+        app: jobs
     spec:
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       terminationGracePeriodSeconds: 60
       containers:
-        - name: publisher-api-service
-          image: publisher-api-amd64:1.0
+        - name: jobs-api
+          image: jobs-api-amd64:1.0

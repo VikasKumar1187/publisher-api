@@ -1,16 +1,16 @@
 # choose golang image and give it a name so that it can be referenced later 
-FROM golang:1.21.1 as build_publisher-api
+FROM golang:1.21.1 as build_jobs-api
 
 ENV CGO_ENABLED 0
 ARG BUILD_REF
 
 # create s dir in docker container file system
 RUN mkdir -p /service
-# copy everything ( except items mentioned in .dockerignore file) from local context( physical machine) into container dir /service
+# copy everything ( except items mentioned in .dockerignore file) from local context( physical machine) into container in /service dir
 COPY . /service
 
-# set my working dir as /service in docker conatiner system
-WORKDIR /service
+# set my working dir in docker conatiner system
+WORKDIR /service/app/services/jobs-api
 # lets build our go binary from source code in dcoker container
 RUN go build -ldflags "-X main.build=${BUILD_REF}"
 
@@ -19,14 +19,13 @@ RUN go build -ldflags "-X main.build=${BUILD_REF}"
 FROM alpine:3.18.4
 ARG BUILD_REF
 
-COPY --from=build_publisher-api /service /service
-#COPY --from=build_publisher-api /service /service
+COPY --from=build_jobs-api /service/app/services/jobs-api/jobs-api /service/jobs-api
 WORKDIR /service
-CMD ["./publisher-api"]
+CMD ["./jobs-api"]
 
 LABEL org.opencontainers.image.created="05102023_1300" \
-    org.opencontainers.image.title="Publisher-api" \
-    org.opencontainers.image.authors="Vikas Kumar" \
+    org.opencontainers.image.title="jobs-api" \
+    org.opencontainers.image.authors="vikas kumar" \
     org.opencontainers.image.source="https://github.com/vikaskumar1187/serviceV3" \
     org.opencontainers.image.revision="${BUILD_REF}" \
-    org.opencontainers.image.vendor="Self"
+    org.opencontainers.image.vendor="self"
